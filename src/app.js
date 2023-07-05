@@ -65,9 +65,6 @@ app.post("/", async(req, res) => {
         if(!user)
             return res.status(404).send("Usuário não cadastrado!");
         const correctPassword = bcrypt.compareSync(password, user.password);
-        console.log(password);
-        console.log(user.password);
-        console.log(correctPassword);
         if(!correctPassword)
             return res.status(401).send("Senha inválida!");
         await db.collection("sessions").deleteMany({userId: user._id});
