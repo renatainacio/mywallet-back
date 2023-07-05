@@ -46,7 +46,7 @@ app.post("/cadastro", async(req, res) => {
         return res.sendStatus(201);
     }catch(err){
         console.log(err.message);
-        return res.sendStatus(500);
+        return res.status(500).send("Erro interno no servidor");
     }  
 });
 
@@ -73,27 +73,29 @@ app.post("/", async(req, res) => {
         res.status(200).send(token);
     }catch(err){
         console.log(err.message);
-        return res.sendStatus(500);
+        return res.status(500).send("Erro interno no servidor");
     }
 });
 
 app.get("/user", async(req, res) => {
     const {authorization} = req.headers;
     const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.sendStatus(401);
+    if(!token) return res.status(401).send("Erro de autenticação");
     try{
         const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.sendStatus(401);
+        if(!session) return res.status(401).send("Erro de autenticação");
         const user = await db.collection("users").findOne({_id: session.userId})
         delete user.password;
         res.send(user);
     } catch(err){
-        return res.sendStatus(500);
+        return res.status(500).send("Erro interno no servidor");
     }
 });
 
 app.post("/nova-transacao/:tipo", async(req, res) => {
     const {type} = req.params;
+    if(type !== "entrada" || type !== "saida")
+        return res.status(422).send("Tipo de transação inválido!");
     const {authorization} = req.headers;
     const {description, amount} = req.body;
     const {error} = Joi.number().required().validate(amount);
@@ -103,10 +105,10 @@ app.post("/nova-transacao/:tipo", async(req, res) => {
     if(errorDesc)
         return res.status(422).send("Campo Descrição não pode estar vazio");
     const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.sendStatus(401);
+    if(!token) return res.status(401).send("Erro de autenticação");
     try{
         const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.sendStatus(401);
+        if(!session) return res.status(401).send("Erro de autenticação");
         const resp = await db.collection("transactions").insertOne({
             userdId: session.userId,
             description,
@@ -114,9 +116,17 @@ app.post("/nova-transacao/:tipo", async(req, res) => {
             type
         });
     } catch(err){
-        return res.sendStatus(500);
+        return res.status(500).send("Erro interno no servidor");
     }   
 });
 
+app.get("/transacoes", async(req, res) => {
+    const {authorization} = req.headers;
+    try{
+
+    }catch(err){
+        return res.status(500).send("Erro interno do servidor");
+    } 
+})
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
