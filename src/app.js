@@ -58,7 +58,7 @@ app.post("/", async(req, res) => {
         return res.status(422).send("Email inválido");
     const {errorPassword, valuePassord} =  Joi.string().required().validate(password);
     if(errorPassword)
-        return res.status(422).send("Campo senha não pode estar vazio");
+        return res.status(422).send("Campo Senha não pode estar vazio");
     try{
         const user = await db.collection('users').findOne({email: email});
         console.log(user);
@@ -80,9 +80,7 @@ app.post("/", async(req, res) => {
 app.get("/user", async(req, res) => {
     const {authorization} = req.headers;
     const token = authorization?.replace("Bearer ", "");
-    console.log(token);
     if(!token) return res.sendStatus(401);
-    console.log(token);
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.sendStatus(401);
@@ -92,6 +90,32 @@ app.get("/user", async(req, res) => {
     } catch(err){
         return res.sendStatus(500);
     }
+});
+
+app.post("/nova-transacao/:tipo", async(req, res) => {
+    const {type} = req.params;
+    const {authorization} = req.headers;
+    const {description, amount} = req.body;
+    const {error} = Joi.number().required().validate(amount);
+    if(error)
+        return res.status(422).send("Valor inválido!");
+    const {errorDesc} =  Joi.string().required().validate(description);
+    if(errorDesc)
+        return res.status(422).send("Campo Descrição não pode estar vazio");
+    const token = authorization?.replace("Bearer ", "");
+    if(!token) return res.sendStatus(401);
+    try{
+        const session = await db.collection("sessions").findOne({token});
+        if(!session) return res.sendStatus(401);
+        const resp = await db.collection("transactions").insertOne({
+            userdId: session.userId,
+            description,
+            amount,
+            type
+        });
+    } catch(err){
+        return res.sendStatus(500);
+    }   
 });
 
 
