@@ -84,7 +84,7 @@ app.get("/user", async(req, res) => {
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.sendStatus(401);
-        const user = await db.collection("users").findOne({_id: session.idUsuario})
+        const user = await db.collection("users").findOne({_id: session.userId})
         delete user.password;
         res.send(user);
     } catch(err){
