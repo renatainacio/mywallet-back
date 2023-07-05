@@ -3,8 +3,10 @@ import cors from "cors";
 import dotenv from "dotenv";
 import Joi from "joi";
 import {MongoClient} from "mongodb";
+import bcrypt from "bcrypt";
+import {v4 as uuid} from "uuid";
 
-const PORT=5000;
+const PORT = process.env.PORT || 5000;
 
 const app = express();
 app.use(express.json());
@@ -31,6 +33,7 @@ app.post("/cadastro", async(req, res) => {
     const {error, value} = schemaUser.validate({username, email, password}, {abortEarly: false});
     if(error)
         return res.status(422).send(error.message);
+    const hash = bcrypt.hashSync(password, 10);
     try{
         const resp = await db.collection('users').findOne({email: email});
         if(resp)
@@ -38,7 +41,7 @@ app.post("/cadastro", async(req, res) => {
         const userRegister = await db.collection('users').insertOne({
             name: username,
             email: email,
-            password: password
+            password: hash
         });
         return res.sendStatus(201);
     }catch(err){
@@ -61,14 +64,30 @@ app.post("/", async(req, res) => {
         console.log(user);
         if(!user)
             return res.status(404).send("Usuário não cadastrado!");
-        if(user.password != password)
+        const correctPassword = bcrypt.compareSync(password, user.password);
+        console.log(password);
+        console.log(user.password);
+        console.log(correctPassword);
+        if(!correctPassword)
             return res.status(401).send("Senha inválida!");
+        await db.collection("sessions").deleteMany({userId: user._id});
+        const token = uuid();
+        await db.collection('sessions').insertOne({token, userId: user._id});
+        res.status(200).send(token);
     }catch(err){
         console.log(err.message);
         return res.sendStatus(500);
     }
-    res.sendStatus(200);
 });
 
+// const {authorization} = req.headers;
+// const token = authorization?.replace("Bearer ", "");
+// if(!token) return res.sendStatus(401);
+// try{
+//     const session = await db.collection("sessions").findOne({token});
+//     if(!session) return res.sendStatus(401);
+//     const user = await db.collection("users").findOne({_id: session.idUsuario})
+//     delete user.password;
+// }
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
