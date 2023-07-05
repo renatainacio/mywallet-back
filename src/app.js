@@ -80,7 +80,7 @@ app.post("/", async(req, res) => {
 app.get("/user", async(req, res) => {
     const {authorization} = req.headers;
     const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.sendStatus(401);
+    if(!token) return res.sendStatus(402);
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.sendStatus(401);
