@@ -80,14 +80,20 @@ app.post("/", async(req, res) => {
     }
 });
 
-// const {authorization} = req.headers;
-// const token = authorization?.replace("Bearer ", "");
-// if(!token) return res.sendStatus(401);
-// try{
-//     const session = await db.collection("sessions").findOne({token});
-//     if(!session) return res.sendStatus(401);
-//     const user = await db.collection("users").findOne({_id: session.idUsuario})
-//     delete user.password;
-// }
+app.get("/user", async(req, res) => {
+    const {authorization} = req.headers;
+    const token = authorization?.replace("Bearer ", "");
+    if(!token) return res.sendStatus(401);
+    try{
+        const session = await db.collection("sessions").findOne({token});
+        if(!session) return res.sendStatus(401);
+        const user = await db.collection("users").findOne({_id: session.idUsuario})
+        delete user.password;
+        res.send(user);
+    } catch(err){
+        return res.sendStatus(500);
+    }
+});
+
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
