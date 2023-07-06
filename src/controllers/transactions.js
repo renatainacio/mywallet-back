@@ -50,13 +50,13 @@ export async function getTransactions(req, res){
 
 export async function deleteTransaction(req, res){
     const {authorization} = req.headers;
-    const {transactionId} = req.params;
+    const {id} = req.params;
     const token = authorization?.replace("Bearer ", "");
     if(!token) return res.status(401).send("Erro de autenticação");
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.status(401).send("Erro de autenticação");
-        const deleted = await db.collection('transactions').deleteOne({_id: new ObjectId(transactionId)});
+        const deleted = await db.collection('transactions').deleteOne({_id: new ObjectId(id)});
         if(deleted.deletedCount === 0) return res.sendStatus(404);
         return res.sendStatus(204);
     }catch(err){
