@@ -33,7 +33,6 @@ export async function signup(req, res){
 
 export async function signin(req, res){
     const {email, password} = req.body;
-    console.log(email);
     const {error, value} = Joi.string().email().required().validate(email);
     if(error)
         return res.status(422).send("Email inválido");
@@ -42,7 +41,6 @@ export async function signin(req, res){
         return res.status(422).send("Campo Senha não pode estar vazio");
     try{
         const user = await db.collection('users').findOne({email: email});
-        console.log(user);
         if(!user)
             return res.status(404).send("Usuário não cadastrado!");
         const correctPassword = bcrypt.compareSync(password, user.password);
