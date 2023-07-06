@@ -20,7 +20,7 @@ export async function postTransaction(req, res){
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.status(401).send("Erro de autenticação");
         const resp = await db.collection("transactions").insertOne({
-            userdId: session.userId,
+            userId: session.userId,
             description,
             amount,
             type,
