@@ -56,7 +56,7 @@ export async function deleteTransaction(req, res){
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.status(401).send("Erro de autenticação");
-        const deleted = await db.collection('transactions').deleteOne({_id: new ObjectId(id), userID: session.userId});
+        const deleted = await db.collection('transactions').deleteOne({_id: new ObjectId(id)});
         if(deleted.deletedCount === 0) return res.sendStatus(404);
         return res.sendStatus(204);
     }catch(err){
@@ -65,5 +65,30 @@ export async function deleteTransaction(req, res){
 }
 
 export async function updateTransaction(req, res){
+    const {authorization} = req.headers;
+    const {id} = req.params;
+    const {description, amount} = req.body;
 
+    const {error} = Joi.number().required().positive().validate(amount);
+    if(error)
+        return res.status(422).send("Valor inválido!");
+    const {errorDesc} =  Joi.string().required().validate(description);
+    if(errorDesc)
+        return res.status(422).send("Campo Descrição não pode estar vazio");
+
+    const token = authorization?.replace("Bearer ", "");
+    if(!token) return res.status(401).send("Erro de autenticação");
+
+    try{
+        const session = await db.collection("sessions").findOne({token});
+        if(!session) return res.status(401).send("Erro de autenticação");
+        const transaction = await db.collection('transactions').findOne({_id: new ObjectId(id)});
+        if(!transaction) return res.sendStatus(404);
+        transaction.description = description;
+        transaction.amount = amount;
+        await db.collection('transactions').updateOne({_id: new ObjectId(id)}, {$set: transaction});
+        return res.sendStatus(200);
+    }catch(err){
+        return res.status(500).send("Erro interno do servidor");
+    }
 }
