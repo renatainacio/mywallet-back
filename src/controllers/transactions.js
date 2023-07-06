@@ -22,7 +22,8 @@ export async function postTransaction(req, res){
             userdId: session.userId,
             description,
             amount,
-            type
+            type,
+            date: dayjs(time).format('DD/MM')
         });
         return res.sendStatus(201);
     } catch(err){
