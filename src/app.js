@@ -3,7 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import {MongoClient} from "mongodb";
 import { getUser, signin, signup } from "./controllers/users.js";
-import { getTransactions, postTransaction } from "./controllers/transactions.js";
+import { deleteTransaction, getTransactions, postTransaction } from "./controllers/transactions.js";
 
 const PORT = process.env.PORT || 5000;
 
@@ -30,5 +30,7 @@ app.get("/user", getUser);
 app.post("/nova-transacao/:type", postTransaction);
 
 app.get("/transacoes", getTransactions);
+
+app.delete("/:id", deleteTransaction);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))

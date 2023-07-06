@@ -1,6 +1,7 @@
 import Joi from "joi";
 import { db } from "../app.js";
 import dayjs from "dayjs";
+import { ObjectId } from "mongodb";
 
 export async function postTransaction(req, res){
     const {type} = req.params;
@@ -45,4 +46,20 @@ export async function getTransactions(req, res){
     }catch(err){
         return res.status(500).send("Erro interno do servidor");
     } 
+}
+
+export async function deleteTransaction(req, res){
+    const {authorization} = req.headers;
+    const {transactionId} = req.params;
+    const token = authorization?.replace("Bearer ", "");
+    if(!token) return res.status(401).send("Erro de autenticação");
+    try{
+        const session = await db.collection("sessions").findOne({token});
+        if(!session) return res.status(401).send("Erro de autenticação");
+        const deleted = await db.collection('transactions').deleteOne({_id: new ObjectId(transactionId)});
+        if(deleted.deletedCount === 0) return res.sendStatus(404);
+        return res.sendStatus(204);
+    }catch(err){
+        return res.status(500).send("Erro interno do servidor");
+    }
 }
