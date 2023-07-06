@@ -31,6 +31,6 @@ app.post("/nova-transacao/:type", postTransaction);
 
 app.get("/transacoes", getTransactions);
 
-app.delete("/:id", deleteTransaction);
+app.delete("/transacoes/:id", deleteTransaction);
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
