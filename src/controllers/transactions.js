@@ -40,7 +40,7 @@ export async function getTransactions(req, res){
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.status(401).send("Erro de autenticação");
-        const transactions = await db.collection('transactions').find({userId: session.userdId}).toArray();
+        const transactions = (await db.collection('transactions').find({userId: session.userdId}).toArray()).reverse();
         return res.send(transactions);
     }catch(err){
         return res.status(500).send("Erro interno do servidor");
