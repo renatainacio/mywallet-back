@@ -24,7 +24,7 @@ export async function postTransaction(req, res){
             description,
             amount,
             type,
-            date: dayjs(time).format('DD/MM')
+            date: dayjs(Date.now()).format('DD/MM')
         });
         return res.sendStatus(201);
     } catch(err){
