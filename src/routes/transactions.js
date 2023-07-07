@@ -2,6 +2,7 @@ import { deleteTransaction, getTransactions, postTransaction, updateTransaction 
 import {Router} from "express";
 import validadeSchema from "../middlewares/validateSchema.js";
 import { schemaTransaction } from "../schemas/transactions.js";
+import validateAuth from "../middlewares/validateAuth.js";
 
 const transactionRouter = Router()
 

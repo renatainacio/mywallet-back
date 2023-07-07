@@ -17,3 +17,5 @@ async function validateAuth(req, res, next){
         return res.status(500).send("Erro interno no servidor");
     }
 }
+
+export default validateAuth;
