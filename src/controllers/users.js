@@ -2,6 +2,7 @@ import { db } from "../database/connection.js";
 import bcrypt from "bcrypt";
 import {v4 as uuid} from "uuid";
 import { schemaUser } from "../schemas/users.js";
+import Joi from "joi";
 
 export async function signup(req, res){
     const {username, email, password} = req.body;
