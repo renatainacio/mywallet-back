@@ -8,6 +8,9 @@ async function validateAuth(req, res, next){
     try{
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.status(401).send("Erro de autenticação");
+        
+        res.locals.session = session;
+        
         next()
     } catch(err){
         console.log(err.message);

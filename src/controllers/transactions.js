@@ -6,13 +6,12 @@ export async function postTransaction(req, res){
     const {type} = req.params;
     if(type !== "entrada" && type !== "saida")
         return res.status(422).send("Tipo de transação inválido!");
-    const {authorization} = req.headers;
+    
     const {description, amount} = req.body;
-    const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.status(401).send("Erro de autenticação");
+
+    const {session} = res.locals;
     try{
-        const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.status(401).send("Erro de autenticação");
+
         const resp = await db.collection("transactions").insertOne({
             userId: session.userId,
             description,
