@@ -1,4 +1,3 @@
-import Joi from "joi";
 import { db } from "../database/connection.js";
 import dayjs from "dayjs";
 import { ObjectId } from "mongodb";
@@ -9,12 +8,6 @@ export async function postTransaction(req, res){
         return res.status(422).send("Tipo de transação inválido!");
     const {authorization} = req.headers;
     const {description, amount} = req.body;
-    const {error} = Joi.number().required().positive().validate(amount);
-    if(error)
-        return res.status(422).send("Valor inválido!");
-    const {errorDesc} =  Joi.string().required().validate(description);
-    if(errorDesc)
-        return res.status(422).send("Campo Descrição não pode estar vazio");
     const token = authorization?.replace("Bearer ", "");
     if(!token) return res.status(401).send("Erro de autenticação");
     try{
@@ -68,15 +61,8 @@ export async function updateTransaction(req, res){
     const {authorization} = req.headers;
     const {id} = req.params;
     const {description, amount} = req.body;
-
-    const {error} = Joi.number().required().positive().validate(amount);
-    if(error)
-        return res.status(422).send("Valor inválido!");
-    const {errorDesc} =  Joi.string().required().validate(description);
-    if(errorDesc)
-        return res.status(422).send("Campo Descrição não pode estar vazio");
-
     const token = authorization?.replace("Bearer ", "");
+
     if(!token) return res.status(401).send("Erro de autenticação");
 
     try{

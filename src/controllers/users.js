@@ -5,9 +5,11 @@ import { schemaUser } from "../schemas/users.js";
 
 export async function signup(req, res){
     const {username, email, password} = req.body;
-    const {error, value} = schemaUser.validate({username, email, password}, {abortEarly: false});
+
+    const {error, value} = schemaUser.validate(req.body, {abortEarly: false});
     if(error)
         return res.status(422).send(error.message);
+
     const hash = bcrypt.hashSync(password, 10);
     try{
         const resp = await db.collection('users').findOne({email: email});
