@@ -6,7 +6,9 @@ import validateAuth from "../middlewares/validateAuth.js";
 
 const transactionRouter = Router()
 
-transactionRouter.post("/nova-transacao/:type", validateAuth, validadeSchema(schemaTransaction), postTransaction);
+transactionRouter.use(validateAuth);
+
+transactionRouter.post("/nova-transacao/:type", validadeSchema(schemaTransaction), postTransaction);
 
 transactionRouter.get("/transacoes", getTransactions);
 

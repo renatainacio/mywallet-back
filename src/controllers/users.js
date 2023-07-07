@@ -24,12 +24,6 @@ export async function signup(req, res){
 
 export async function signin(req, res){
     const {email, password} = req.body;
-    const {error, value} = Joi.string().email().required().validate(email);
-    if(error)
-        return res.status(422).send("Email inválido");
-    const {errorPassword, valuePassord} =  Joi.string().required().validate(password);
-    if(errorPassword)
-        return res.status(422).send("Campo Senha não pode estar vazio");
     try{
         const user = await db.collection('users').findOne({email: email});
         if(!user)
@@ -48,12 +42,8 @@ export async function signin(req, res){
 };
 
 export async function getUser (req, res){
-    const {authorization} = req.headers;
-    const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.status(401).send("Erro de autenticação");
+    const {session} = res.locals;
     try{
-        const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.status(401).send("Erro de autenticação");
         const user = await db.collection("users").findOne({_id: session.userId})
         delete user.password;
         res.send(user);

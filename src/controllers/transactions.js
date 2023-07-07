@@ -27,12 +27,8 @@ export async function postTransaction(req, res){
 };
 
 export async function getTransactions(req, res){
-    const {authorization} = req.headers;
-    const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.status(401).send("Erro de autenticação");
+    const {session} = res.locals;
     try{
-        const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.status(401).send("Erro de autenticação");
         const transactions = (await db.collection('transactions').find({userId: session.userId}).toArray()).reverse();
         return res.send(transactions);
     }catch(err){
@@ -41,13 +37,8 @@ export async function getTransactions(req, res){
 }
 
 export async function deleteTransaction(req, res){
-    const {authorization} = req.headers;
     const {id} = req.params;
-    const token = authorization?.replace("Bearer ", "");
-    if(!token) return res.status(401).send("Erro de autenticação");
     try{
-        const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.status(401).send("Erro de autenticação");
         const deleted = await db.collection('transactions').deleteOne({_id: new ObjectId(id)});
         if(deleted.deletedCount === 0) return res.sendStatus(404);
         return res.sendStatus(204);
@@ -57,16 +48,10 @@ export async function deleteTransaction(req, res){
 }
 
 export async function updateTransaction(req, res){
-    const {authorization} = req.headers;
     const {id} = req.params;
     const {description, amount} = req.body;
-    const token = authorization?.replace("Bearer ", "");
-
-    if(!token) return res.status(401).send("Erro de autenticação");
 
     try{
-        const session = await db.collection("sessions").findOne({token});
-        if(!session) return res.status(401).send("Erro de autenticação");
         const transaction = await db.collection('transactions').findOne({_id: new ObjectId(id)});
         if(!transaction) return res.sendStatus(404);
         transaction.description = description;
