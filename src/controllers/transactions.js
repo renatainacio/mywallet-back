@@ -1,5 +1,5 @@
 import Joi from "joi";
-import { db } from "../app.js";
+import { db } from "../database/connection.js";
 import dayjs from "dayjs";
 import { ObjectId } from "mongodb";
 
@@ -83,11 +83,9 @@ export async function updateTransaction(req, res){
         const session = await db.collection("sessions").findOne({token});
         if(!session) return res.status(401).send("Erro de autenticação");
         const transaction = await db.collection('transactions').findOne({_id: new ObjectId(id)});
-        console.log(transaction);
         if(!transaction) return res.sendStatus(404);
         transaction.description = description;
         transaction.amount = amount;
-        console.log(transaction);
         await db.collection('transactions').updateOne({_id: new ObjectId(id)}, {$set: transaction});
         return res.sendStatus(200);
     }catch(err){

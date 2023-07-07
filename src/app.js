@@ -1,38 +1,12 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
-import {MongoClient} from "mongodb";
-import { getUser, signin, signup } from "./controllers/users.js";
-import { deleteTransaction, getTransactions, postTransaction, updateTransaction } from "./controllers/transactions.js";
-
-const PORT = process.env.PORT || 5000;
+import router from "./routes/index.js";
 
 const app = express();
+
 app.use(express.json());
 app.use(cors());
-dotenv.config();
+app.use(router);
 
-const mongoClient = new MongoClient(process.env.DATABASE_URL);
-try{
-    await mongoClient.connect();
-} catch(err){
-    console.log(err);
-}
-
-export const db = mongoClient.db();
-
-app.post("/cadastro", signup);
-
-app.post("/", signin);
-
-app.get("/user", getUser);
-
-app.post("/nova-transacao/:type", postTransaction);
-
-app.get("/transacoes", getTransactions);
-
-app.delete("/transacoes/:id", deleteTransaction);
-
-app.put("/transacoes/:id", updateTransaction);
-
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`))
