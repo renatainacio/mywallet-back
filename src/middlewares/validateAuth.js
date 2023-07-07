@@ -1,4 +1,4 @@
-
+import { db } from "../database/connection.js";
 //post transaction
 
 async function validateAuth(req, res, next){
