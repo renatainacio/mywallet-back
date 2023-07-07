@@ -5,7 +5,7 @@ import { schemaTransaction } from "../schemas/transactions.js";
 
 const transactionRouter = Router()
 
-transactionRouter.post("/nova-transacao/:type", validadeSchema(schemaTransaction), postTransaction);
+transactionRouter.post("/nova-transacao/:type", validateAuth, validadeSchema(schemaTransaction), postTransaction);
 
 transactionRouter.get("/transacoes", getTransactions);
 
