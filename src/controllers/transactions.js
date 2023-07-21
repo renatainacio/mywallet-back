@@ -29,7 +29,7 @@ export async function postTransaction(req, res){
 export async function getTransactions(req, res){
 
     //print cookie in console
-    console.log(req.cookies.email);
+    console.log(req.cookies);
 
     const {session} = res.locals;
     try{
