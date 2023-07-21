@@ -36,6 +36,7 @@ export async function signin(req, res){
 
         //cookie config
         res.cookie("email", email);
+        res.cookie("token", token);
 
         res.status(200).send(token);
     }catch(err){
