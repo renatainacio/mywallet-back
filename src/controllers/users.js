@@ -34,10 +34,16 @@ export async function signin(req, res){
         const token = uuid();
         await db.collection('sessions').insertOne({token, userId: user._id});
 
+        
         //cookie config
         // res.cookie("email", email);
         // res.cookie("token", token);
-        res.setHeader('Set-Cookie', 'isLoggedin=true');
+
+        //mannually add cookies
+        const date = new Date();
+        date.setHours(date.getHours() + 5);
+
+        res.setHeader('Set-Cookie', `isLoggedin=true; Expires=${date}`);
 
         res.status(200).send(token);
     }catch(err){
