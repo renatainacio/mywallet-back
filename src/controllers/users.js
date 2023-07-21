@@ -35,8 +35,9 @@ export async function signin(req, res){
         await db.collection('sessions').insertOne({token, userId: user._id});
 
         //cookie config
-        res.cookie("email", email);
-        res.cookie("token", token);
+        // res.cookie("email", email);
+        // res.cookie("token", token);
+        res.setHeader('Set-Cookie', 'isLoggedin=true');
 
         res.status(200).send(token);
     }catch(err){
