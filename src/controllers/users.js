@@ -1,7 +1,6 @@
 import { db } from "../database/connection.js";
 import bcrypt from "bcrypt";
 import {v4 as uuid} from "uuid";
-import Joi from "joi";
 
 export async function signup(req, res){
     const {username, email, password} = req.body;
@@ -34,11 +33,21 @@ export async function signin(req, res){
         await db.collection("sessions").deleteMany({userId: user._id});
         const token = uuid();
         await db.collection('sessions').insertOne({token, userId: user._id});
+
+        //cookie config
+        res.cookie("email", email);
+
         res.status(200).send(token);
     }catch(err){
         console.log(err.message);
         return res.status(500).send("Erro interno no servidor");
     }
+};
+
+
+//clearing email cookie
+export async function logout(req, res){
+    res.clearCookie("email");
 };
 
 export async function getUser (req, res){

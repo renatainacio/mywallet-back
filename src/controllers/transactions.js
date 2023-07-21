@@ -27,6 +27,10 @@ export async function postTransaction(req, res){
 };
 
 export async function getTransactions(req, res){
+
+    //print cookie in console
+    console.log(req.cookies.email);
+
     const {session} = res.locals;
     try{
         const transactions = (await db.collection('transactions').find({userId: session.userId}).toArray()).reverse();
